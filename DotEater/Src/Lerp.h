@@ -1,7 +1,8 @@
 #pragma once
 #include "GameObject.h"
 
-inline VECTOR2 Lerp(VECTOR2 start, VECTOR2 end, float rate)
+template<typename T>
+inline T Lerp(T start, T end, float rate)
 {
 	return (end - start) * rate + start;
 }
@@ -19,4 +20,11 @@ float easeOutBounce(float x) {
     } else {
         return n1 * (x -= 2.625 / d1) * x + 0.984375;
     }
+}
+
+float easeOutBack(float x) {
+    const float c1 = 1.70158;
+    const float c3 = c1 + 1;
+
+    return 1 + c3 * pow(x - 1, 3) + c1 * pow(x - 1, 2);
 }

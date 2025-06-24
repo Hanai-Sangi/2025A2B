@@ -26,13 +26,16 @@ void ReadyGo::Update()
 		// startPos→endPosへ60フレームで移動するときの、
 		// readyCounterフレーム後の位置を求める
 		float rate = (float)readyCounter / 60.0f;
-		rate = easeOutBounce(rate);
-		position = Lerp(startPos, endPos, rate);
+		rate = easeOutBack(rate);
+		position = Lerp<VECTOR2>(startPos, endPos, rate);
 	}
 	if (readyCounter == 120) {
 		PlayScene* scene = 
 			dynamic_cast<PlayScene*>(SceneManager::CurrentScene());
 		scene->Go();
+	}
+	if (readyCounter == 120 + 60) {
+		DestroyMe();
 	}
 }
 

@@ -5,6 +5,7 @@
 #include "Player.h"
 #include "Stage.h"
 #include "ReadyGo.h"
+#include "PlayTime.h"
 
 PlayScene::PlayScene()
 {
@@ -12,8 +13,9 @@ PlayScene::PlayScene()
 		VECTOR3(0, 10, -10), VECTOR3(0, 0, 0), 
 		VECTOR3(0, 1, 0));
 
-	new Stage();
+	new Stage(0);
 	new ReadyGo();
+	new PlayTime();
 
 	state = State::S_Ready;
 }

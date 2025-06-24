@@ -2,21 +2,40 @@
 #include <vector>
 #include "Player.h"
 #include "Coin.h"
+#include "CsvReader.h"
 
-std::vector<std::vector<int>> map =
-{
-	{ 1, 1, 0, 1, 1, 1, 1 },
-	{ 1, 1, 0, 3, 0, 3, 1 },
-	{ 1, 2, 0, 1, 1, 0, 1 },
-	{ 1, 1, 1, 1, 1, 1, 1 },
-};
+//std::vector<std::vector<int>> map =
+//{
+//	{ 1, 1, 0, 1, 1, 1, 1 },
+//	{ 1, 1, 0, 3, 0, 3, 1 },
+//	{ 1, 2, 0, 1, 1, 0, 1 },
+//	{ 1, 1, 1, 1, 1, 1, 1 },
+//};
+std::vector<std::vector<int>> map;
 
-Stage::Stage()
+Stage::Stage() : Stage(0) {}
+
+Stage::Stage(int stageNo)
 {
 	mesh = new CFbxMesh();
 	mesh->Load("data/LowPoly/WallStone.mesh");
 	meshCol = new MeshCollider();
 	meshCol->MakeFromMesh(mesh); // “–‚½‚è”»’èƒ‚ƒfƒ‹‚ğì‚é
+
+	// csv‚ğ“Ç‚ñ‚Åmap‚ğì‚é
+	char filename[60];
+	sprintf_s<60>(filename, "data/Stage%02d.csv", stageNo);
+	CsvReader* csv = new CsvReader(filename);
+	int lines = csv->GetLines();
+	map.resize(lines);
+	for (int z = 0; z < lines; z++) {
+		int cols = csv->GetColumns(z);
+		map[z].resize(cols);
+		for (int x = 0; x < cols; x++) {
+			map[z][x] = csv->GetInt(z, x);
+		}
+	}
+	delete csv;
 
 	for (int z = 0; z < map.size(); z++) {
 		for (int x = 0; x < map[z].size(); x++) {
