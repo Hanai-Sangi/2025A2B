@@ -18,13 +18,33 @@ Player::~Player()
 void Player::Update()
 {
 	animator->Update();
-	auto inp = GameDevice()->m_pDI->GetJoyState();
-	int x = inp.lRx;
-	int y = inp.lRy;
-	int b = inp.rgbButtons[0];
+	VECTOR2 inp = LStickVec();
+	float len = magnitude(inp);
 	ImGui::Begin("PAD");
-	ImGui::InputInt("RX", &x);
-	ImGui::InputInt("RY", &y);
-	ImGui::InputInt("LB", &b);
+	ImGui::InputFloat("LX", &inp.x);
+	ImGui::InputFloat("LY", &inp.y);
+	ImGui::InputFloat("Len", &len);
 	ImGui::End();
+}
+
+VECTOR2 Player::LStickVec()
+{
+	auto inp = GameDevice()->m_pDI->GetJoyState();
+	float x = (float)inp.lX;
+	float y = (float)inp.lY;
+	x /= 1000.0f;
+	y /= 1000.0f;
+	if (GameDevice()->m_pDI->CheckKey(KD_DAT, DIK_W))
+		y = -1.0f;
+	if (GameDevice()->m_pDI->CheckKey(KD_DAT, DIK_S))
+		y = 1.0f;
+	if (GameDevice()->m_pDI->CheckKey(KD_DAT, DIK_A))
+		x = -1.0f;
+	if (GameDevice()->m_pDI->CheckKey(KD_DAT, DIK_D))
+		x = 1.0f;
+	VECTOR2 ret = VECTOR2(x, y);
+	if (magnitude(ret) > 1.0) {
+		ret = normalize(ret);
+	}
+	return ret;
 }

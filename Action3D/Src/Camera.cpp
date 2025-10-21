@@ -15,11 +15,18 @@ Camera::Camera()
 Camera::~Camera()
 {
 }
+float clampMe(float& in, float minV, float maxV)
+{
+	if (in<minV) in = minV;
+	if (in>maxV) in = maxV;
+	return in;
+}
 
 void Camera::Update()
 {
 	transform.rotation.y += RStickX() * 5.0f * DegToRad;
 	transform.rotation.x += RStickY() * 5.0f * DegToRad;
+	clampMe(transform.rotation.x, -30*DegToRad, 85*DegToRad);
 
 	VECTOR3 eye = VECTOR3(0, 0, -6)
 		* XMMatrixRotationX(transform.rotation.x)
