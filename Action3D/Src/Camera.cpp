@@ -1,4 +1,5 @@
 #include "Camera.h"
+#include "Player.h"
 
 Camera::Camera()
 {
@@ -24,6 +25,9 @@ float clampMe(float& in, float minV, float maxV)
 
 void Camera::Update()
 {
+	Player* pl = ObjectManager::FindGameObject<Player>();
+	VECTOR3 plPos = pl->GetTransform().position;
+
 	transform.rotation.y += RStickX() * 5.0f * DegToRad;
 	transform.rotation.x += RStickY() * 5.0f * DegToRad;
 	clampMe(transform.rotation.x, -30*DegToRad, 85*DegToRad);
@@ -31,8 +35,8 @@ void Camera::Update()
 	VECTOR3 eye = VECTOR3(0, 0, -6)
 		* XMMatrixRotationX(transform.rotation.x)
 		* XMMatrixRotationY(transform.rotation.y)
-		+ VECTOR3(0, 1.2f, 0);
-	VECTOR3 look = VECTOR3(0, 2, 0);
+		+ VECTOR3(0, 1.2f, 0) + plPos;
+	VECTOR3 look = VECTOR3(0, 2, 0) + plPos;
 	GameDevice()->m_vEyePt = eye; // カメラ座標
 	GameDevice()->m_vLookatPt = look; // 注視点
 	GameDevice()->m_mView = XMMatrixLookAtLH(     // ビューマトリックス
