@@ -26,7 +26,19 @@ void Player::Update()
 		float th = atan2f(camVec.x, camVec.z);
 		velocity = velocity * XMMatrixRotationY(th);
 		transform.position += velocity;
-		transform.rotation.y = atan2f(velocity.x, velocity.z);
+//		transform.rotation.y = atan2f(velocity.x, velocity.z);
+		float ang = atan2f(velocity.x, velocity.z);
+		float diff = ang - transform.rotation.y;
+		// -180Å`180Ç…é˚ÇﬂÇÈ
+		while (diff < -XM_PI) diff += XM_2PI;
+		while (diff > XM_PI) diff -= XM_2PI;
+		if (diff > 20.0f*DegToRad) {
+			transform.rotation.y += 20.0f * DegToRad;
+		} else if (diff < -20.0f*DegToRad) {
+			transform.rotation.y -= 20.0f * DegToRad;
+		} else {
+			transform.rotation.y = ang;
+		}
 	}
 	float len = magnitude(inp);
 	ImGui::Begin("PAD");
