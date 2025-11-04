@@ -20,4 +20,5 @@ private:
 	void UpdateAttack1();
 	void UpdateAttack2();
 	void UpdateAttack3();
+	bool attackPushed;
 };

@@ -121,13 +121,34 @@ void Player::UpdateNormal()
 
 	if (GameDevice()->m_pDI->CheckKey(KD_TRG, DIK_M))
 	{
-		animator->Play(A_ATTACK1);
+		animator->MergePlay(A_ATTACK1);
 		state = ST_ATTACK1;
+		attackPushed = false;
 	}
 }
 
 void Player::UpdateAttack1()
 {
+	if (animator->CurrentFrame() < 70.0f) {
+		animator->SetPlaySpeed(2.0f);
+	} else {
+		animator->SetPlaySpeed(1.2f);
+	}
+	// 70フレームまでにMボタンを押していたら、
+	if (animator->CurrentFrame() < 70.0f) { 
+		if (GameDevice()->m_pDI->CheckKey(
+									KD_TRG, DIK_M)) {
+			attackPushed = true;
+		}
+	} else {
+		if (attackPushed) {
+			// アニメーションを切り替える
+			animator->MergePlay(A_ATTACK2);
+			state = ST_ATTACK2;
+			attackPushed = false;
+		}
+	}
+
 	if (animator->Finished()) {
 		animator->Play(A_RUN);
 		state = ST_NORMAL;
@@ -136,8 +157,36 @@ void Player::UpdateAttack1()
 
 void Player::UpdateAttack2()
 {
+	if (animator->CurrentFrame() < 70.0f) {
+		animator->SetPlaySpeed(2.0f);
+	} else {
+		animator->SetPlaySpeed(1.2f);
+	}
+	// 70フレームまでにMボタンを押していたら、
+	if (animator->CurrentFrame() < 70.0f) {
+		if (GameDevice()->m_pDI->CheckKey(
+			KD_TRG, DIK_M)) {
+			attackPushed = true;
+		}
+	} else {
+		if (attackPushed) {
+			// アニメーションを切り替える
+			animator->Play(A_ATTACK3);
+			state = ST_ATTACK3;
+			attackPushed = false;
+		}
+	}
+	if (animator->Finished()) {
+		animator->Play(A_RUN);
+		state = ST_NORMAL;
+	}
+
 }
 
 void Player::UpdateAttack3()
 {
+	if (animator->Finished()) {
+		animator->Play(A_RUN);
+		state = ST_NORMAL;
+	}
 }
