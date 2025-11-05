@@ -1,5 +1,6 @@
 #include "Player.h"
 #include "../Libs/Imgui/imgui.h"
+#include "Golem.h"
 
 enum ANIM_ID {
 	A_RUN = 0,
@@ -43,6 +44,11 @@ void Player::Update()
 		break;
 	}
 	animator->Update();
+
+	Golem* gom = ObjectManager::FindGameObject<Golem>();
+	VECTOR3 push = gom->CollideSphere(
+		transform.position+VECTOR3(0, 0.5, 0), 0.5f);
+	transform.position += push;
 }
 
 VECTOR2 Player::LStickVec()

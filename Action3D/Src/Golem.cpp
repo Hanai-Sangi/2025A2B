@@ -25,3 +25,15 @@ Golem::~Golem()
 void Golem::Update()
 {
 }
+
+VECTOR3 Golem::CollideSphere(VECTOR3 center, float radius)
+{
+	VECTOR3 myCenter = transform.position + VECTOR3(0, 0.5, 0);
+	float myRad = 1.0f;
+	VECTOR3 v = center - myCenter;
+	float d = magnitude(v);
+	if ( d <= radius + myRad) {
+		return normalize(v) * (radius + myRad - d);
+	}
+	return VECTOR3();
+}
