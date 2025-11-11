@@ -15,4 +15,28 @@ public:
 	/// <param name="radius">”¼Œa</param>
 	/// <returns>‰Ÿ‚µ–ß‚·ƒxƒNƒgƒ‹</returns>
 	VECTOR3 CollideSphere(VECTOR3 center, float radius);
+private:
+	void UpdateIntention();
+	enum Intent {
+		I_WALK = 0,
+		I_ATTACK,
+		I_BACK,
+	};
+	Intent intent;
+	void ChangeIntention(Intent inte);
+	void IntWalk();
+	void IntAttack();
+	void IntBack();
+
+	void UpdateAction();
+	enum Action {
+		A_MOVE = 0,
+		A_STAND,
+		A_PUNCH,
+	};
+	Action action;
+	void ChangeAction(Action act);
+	void ActMove();
+	void ActStand();
+	void ActPunch();
 };
