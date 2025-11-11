@@ -2,6 +2,9 @@
 
 enum ANIM_ID {
 	A_IDLE = 0,
+	A_WALK,
+	A_ATTACK,
+	A_DIE
 };
 
 Golem::Golem(VECTOR3 pos, float rotY)
@@ -9,6 +12,9 @@ Golem::Golem(VECTOR3 pos, float rotY)
 	mesh = new CFbxMesh();
 	mesh->Load("Data/Golem/golem.mesh");
 	mesh->LoadAnimation(A_IDLE, "Data/Golem/golem_stand.anmx", true);
+	mesh->LoadAnimation(A_WALK, "Data/Golem/golem_walk.anmx", true);
+	mesh->LoadAnimation(A_ATTACK, "Data/Golem/golem_attack.anmx", false);
+	mesh->LoadAnimation(A_DIE, "Data/Golem/golem_die.anmx", false);
 	animator = new Animator();
 	animator->SetModel(mesh);
 	animator->Play(A_IDLE);
@@ -24,6 +30,7 @@ Golem::~Golem()
 
 void Golem::Update()
 {
+	animator->Update();
 }
 
 VECTOR3 Golem::CollideSphere(VECTOR3 center, float radius)
