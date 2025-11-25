@@ -7,6 +7,7 @@ public:
 	Player();
 	~Player();
 	void Update() override;
+	void Draw() override;
 private:
 	VECTOR2 LStickVec();
 	enum State {

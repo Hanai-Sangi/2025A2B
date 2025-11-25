@@ -51,6 +51,18 @@ void Player::Update()
 	transform.position += push;
 }
 
+void Player::Draw()
+{
+	Object3D::Draw();
+	const VECTOR3 swordTop = VECTOR3(0.9966, 0.6536, 0.14);
+	MATRIX4X4 hand = mesh->GetFrameMatrices(animator, 34);
+	VECTOR3 handPos = VECTOR3(0,0,0) * hand;
+	handPos *= transform.matrix();
+	VECTOR3 top = swordTop * hand * transform.matrix();
+	CSprite spr;
+	spr.DrawLine3D(top, handPos, 0xff);
+}
+
 VECTOR2 Player::LStickVec()
 {
 	auto inp = GameDevice()->m_pDI->GetJoyState();

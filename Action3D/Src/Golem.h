@@ -39,4 +39,6 @@ private:
 	void ActMove();
 	void ActStand();
 	void ActPunch();
+
+	VECTOR3 teritoriCenter;
 };

@@ -24,6 +24,8 @@ Golem::Golem(VECTOR3 pos, float rotY)
 	transform.rotation = VECTOR3(0, rotY, 0);
 	transform.scale = VECTOR3(0.3, 0.3, 0.3);
 
+	teritoriCenter = pos;
+
 	action = A_STAND;
 	intent = I_WALK;
 }
@@ -72,29 +74,80 @@ void Golem::ChangeIntention(Intent inte)
 		return;
 	switch (inte) {
 	case I_WALK:
+		ChangeAction(A_STAND);
 		break;
 	case I_ATTACK:
 		ChangeAction(A_MOVE);
 		break;
 	case I_BACK:
+		ChangeAction(A_STAND);
 		break;
 	}
 	intent = inte;
 }
 
+bool InSight(const VECTOR3& pos, float len, float ang, const Transform& my)
+{
+	VECTOR3 toPlayer = pos - my.position;
+	if (toPlayer.Length() > len)
+		return false;
+	VECTOR3 toPlayerNorm = normalize(toPlayer);
+	VECTOR3 forward = VECTOR3(0, 0, 1) * XMMatrixRotationY(my.rotation.y);
+	float ip = dot(toPlayerNorm, forward);
+	return (ip >= cosf(ang));
+}
+
 void Golem::IntWalk()
 {
-	if (/*Playerが視界に入ったら*/) {
+	// プレイヤーの座標を求める
+	Player* pl = ObjectManager::FindGameObject<Player>();
+	VECTOR3 plPos = pl->GetTransform().position; // プレイヤーの座標
+	if (InSight(plPos, 5.0f, 30 * DegToRad, transform)) {
 		ChangeIntention(I_ATTACK);
 	}
 }
 
 void Golem::IntAttack()
 {
+	// プレイヤーの座標を求める
+	Player* pl = ObjectManager::FindGameObject<Player>();
+	VECTOR3 plPos = pl->GetTransform().position; // プレイヤーの座標
+	if (not InSight(plPos, 7.0f, 40 * DegToRad, transform)) { // 視野外
+		ChangeIntention(I_WALK);
+	}
+
+	// テリトリーから外れたら帰るChangeIntention(I_BACK)
+	VECTOR3 v = transform.position - teritoriCenter;
+	if (v.Length() >= 10.0) {
+		ChangeIntention(I_BACK);
+	}
 }
 
 void Golem::IntBack()
 {
+	float& rotY = transform.rotation.y;
+	const float RotSpeed = 10.0f * DegToRad;
+
+	animator->Play(A_WALK);
+	animator->SetPlaySpeed(2.0f);
+	VECTOR3 v = teritoriCenter - transform.position;
+	VECTOR3 vNorm = normalize(v); // 移動する向き
+	VECTOR3 forward = VECTOR3(0, 0, 1) * XMMatrixRotationY(rotY);
+	if (dot(vNorm, forward) >= cos(RotSpeed)) {
+		rotY = atan2f(v.x, v.z);
+	} else {
+		VECTOR3 right = VECTOR3(1, 0, 0) * XMMatrixRotationY(rotY);
+		if (dot(v, right) > 0) {
+			rotY += RotSpeed;
+		} else {
+			rotY -= RotSpeed;
+		}
+	}
+	transform.position += VECTOR3(0, 0, 0.02f) * XMMatrixRotationY(rotY);
+	// 戻るのをやめて待機する
+	v = teritoriCenter - transform.position;
+	if (v.Length() < 1.0f)
+		ChangeIntention(I_WALK);
 }
 
 void Golem::UpdateAction()
@@ -127,6 +180,7 @@ void Golem::ChangeAction(Action act)
 
 void Golem::ActMove()
 {
+	// Playerに向かって移動
 	float& rotY = transform.rotation.y;
 	const float RotSpeed = 10.0f * DegToRad;
 
@@ -148,6 +202,7 @@ void Golem::ActMove()
 		}
 	}
 	transform.position += VECTOR3(0,0,0.05f)* XMMatrixRotationY(rotY);
+	// なぐるか？
 	v = plPos - transform.position;
 	if (v.Length() < 2.0f) {
 		ChangeAction(A_PUNCH);
