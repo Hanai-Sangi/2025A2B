@@ -45,7 +45,7 @@ void Golem::Update()
 void Golem::Draw()
 {
 	Object3D::Draw();
-	DrawSphere(transform.position+VECTOR3(0,1,0), 1.0f, 0xff);
+	DrawSphere(transform.position+VECTOR3(0,1,0), 1.0f, RED);
 }
 
 VECTOR3 Golem::CollideSphere(VECTOR3 center, float radius)

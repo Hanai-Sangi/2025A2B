@@ -1,5 +1,31 @@
 #include "MyLibrary.h"
 
+bool MyLibrary::CollideSegmentToSphere(VECTOR3 seg1, VECTOR3 seg2, VECTOR3 center, float radius)
+{
+	VECTOR3 a = center - seg1;
+	VECTOR3 b = seg2 - seg1;
+	float len2 = b.LengthSquare();
+	float t = dot(a, b) / len2;
+	if (t < 0.0f) {
+		VECTOR3 v = center - seg1;
+		if (v.LengthSquare() < radius * radius) {
+			return true;
+		}
+	} else if (t > 1.0f) {
+		VECTOR3 v = center - seg2;
+		if (v.LengthSquare() < radius * radius) {
+			return true;
+		}
+	} else {
+		float n2 = t*t * len2;
+		float c2 = a.LengthSquare() - n2;
+		if (c2 < radius*radius) {
+			return true;
+		}
+	}
+	return false;
+}
+
 void MyLibrary::DrawSphere(const VECTOR3& center, float radius, DWORD color)
 {
 	CSprite spr;
