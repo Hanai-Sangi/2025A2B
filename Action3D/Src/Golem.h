@@ -7,6 +7,7 @@ public:
 	Golem(VECTOR3 pos, float rotY);
 	~Golem();
 	void Update() override;
+	void Draw() override;
 
 	/// <summary>
 	/// ‹…‚Æ“–‚½‚è”»’è‚·‚é

@@ -1,5 +1,6 @@
 #include "Golem.h"
 #include "Player.h"
+#include "MyLibrary.h"
 
 enum ANIM_ID {
 	A_IDLE = 0,
@@ -39,6 +40,12 @@ void Golem::Update()
 	animator->Update();
 	UpdateIntention();
 	UpdateAction();
+}
+
+void Golem::Draw()
+{
+	Object3D::Draw();
+	DrawSphere(transform.position+VECTOR3(0,1,0), 1.0f, 0xff);
 }
 
 VECTOR3 Golem::CollideSphere(VECTOR3 center, float radius)
