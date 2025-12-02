@@ -152,20 +152,20 @@ void Player::UpdateNormal()
 
 void Player::UpdateAttack1()
 {
-	if (animator->CurrentFrame() < 70.0f) {
+	float f = animator->CurrentFrame();
+	// アニメーション再生速度
+	static const float FastTime = 70.0f;
+	if (f < FastTime) {
 		animator->SetPlaySpeed(2.0f);
 	} else {
 		animator->SetPlaySpeed(1.2f);
 	}
-	// 70フレームまでにMボタンを押していたら、
-	if (animator->CurrentFrame() < 70.0f) { 
-		if (GameDevice()->m_pDI->CheckKey(
-									KD_TRG, DIK_M)) {
+
+	// 攻撃ボタン処理
+	static const float EnableButton = 70.0f;
+	if (f < EnableButton) {
+		if (GameDevice()->m_pDI->CheckKey(KD_TRG, DIK_M)) {
 			attackPushed = true;
-		}
-		auto golems = ObjectManager::FindGameObjects<Golem>();
-		for (Golem* g : golems) {
-			g->CollideSword(swordTop, swordBtm);
 		}
 	} else {
 		if (attackPushed) {
@@ -173,6 +173,16 @@ void Player::UpdateAttack1()
 			animator->MergePlay(A_ATTACK2);
 			state = ST_ATTACK2;
 			attackPushed = false;
+		}
+	}
+
+	// 攻撃を敵に当てる
+	static const float AttackBegin = 20.0f;
+	static const float AttackEnd = 70.0f;
+	if (f >= AttackBegin && f <= AttackEnd) {
+		auto golems = ObjectManager::FindGameObjects<Golem>();
+		for (Golem* g : golems) {
+			g->CollideSword(swordTop, swordBtm);
 		}
 	}
 
