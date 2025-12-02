@@ -16,6 +16,8 @@ public:
 	/// <param name="radius">”¼Œa</param>
 	/// <returns>‰Ÿ‚µ–ß‚·ƒxƒNƒgƒ‹</returns>
 	VECTOR3 CollideSphere(VECTOR3 center, float radius);
+
+	bool CollideSword(VECTOR3 top, VECTOR3 btm);
 private:
 	void UpdateIntention();
 	enum Intent {

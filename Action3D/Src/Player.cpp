@@ -46,21 +46,26 @@ void Player::Update()
 	animator->Update();
 
 	Golem* gom = ObjectManager::FindGameObject<Golem>();
-	VECTOR3 push = gom->CollideSphere(
-		transform.position+VECTOR3(0, 0.5, 0), 0.5f);
-	transform.position += push;
+	if (gom != nullptr) {
+		VECTOR3 push = gom->CollideSphere(
+			transform.position + VECTOR3(0, 0.5, 0), 0.5f);
+		transform.position += push;
+	}
 }
 
 void Player::Draw()
 {
 	Object3D::Draw();
-	const VECTOR3 swordTop = VECTOR3(0.9966, 0.6536, 0.14);
+	const VECTOR3 SwordTop = VECTOR3(0.9966, 0.6536, 0.14);
 	MATRIX4X4 hand = mesh->GetFrameMatrices(animator, 34);
 	VECTOR3 handPos = VECTOR3(0,0,0) * hand;
 	handPos *= transform.matrix();
-	VECTOR3 top = swordTop * hand * transform.matrix();
+	VECTOR3 top = SwordTop * hand * transform.matrix();
 	CSprite spr;
 	spr.DrawLine3D(top, handPos, 0xff);
+	swordTop = top;
+	swordBtm = handPos;
+
 }
 
 VECTOR2 Player::LStickVec()
@@ -157,6 +162,10 @@ void Player::UpdateAttack1()
 		if (GameDevice()->m_pDI->CheckKey(
 									KD_TRG, DIK_M)) {
 			attackPushed = true;
+		}
+		auto golems = ObjectManager::FindGameObjects<Golem>();
+		for (Golem* g : golems) {
+			g->CollideSword(swordTop, swordBtm);
 		}
 	} else {
 		if (attackPushed) {

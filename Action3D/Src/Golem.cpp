@@ -60,6 +60,16 @@ VECTOR3 Golem::CollideSphere(VECTOR3 center, float radius)
 	return VECTOR3();
 }
 
+bool Golem::CollideSword(VECTOR3 top, VECTOR3 btm)
+{
+	if (CollideSegmentToSphere(top, btm,
+				transform.position + VECTOR3(0, 1, 0), 1.0f)) {
+		DestroyMe();
+		return true;
+	}
+	return false;
+}
+
 void Golem::UpdateIntention()
 {
 	switch (intent) {
