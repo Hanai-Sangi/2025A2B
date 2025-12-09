@@ -12,7 +12,9 @@ PlayScene::PlayScene()
 	new Field();
 	new Player();
 	new Camera();
-	new Golem(VECTOR3(0, 0, 4), 0);
+	for (int i = 0; i < 10; i++) {
+		new Golem(VECTOR3(i*1.5f, 0, 4), 0);
+	}
 }
 
 PlayScene::~PlayScene()

@@ -24,24 +24,29 @@ private:
 		I_WALK = 0,
 		I_ATTACK,
 		I_BACK,
+		I_DAMAGED,
 	};
 	Intent intent;
 	void ChangeIntention(Intent inte);
 	void IntWalk();
 	void IntAttack();
 	void IntBack();
+	void IntDamaged();
 
 	void UpdateAction();
 	enum Action {
 		A_MOVE = 0,
 		A_STAND,
 		A_PUNCH,
+		A_DIE,
 	};
 	Action action;
 	void ChangeAction(Action act);
 	void ActMove();
 	void ActStand();
 	void ActPunch();
+	void ActDie();
 
 	VECTOR3 teritoriCenter;
+	float dieTime;
 };

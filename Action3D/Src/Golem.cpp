@@ -1,6 +1,7 @@
 #include "Golem.h"
 #include "Player.h"
 #include "MyLibrary.h"
+#include "EnemyManager.h"
 
 enum ANIM_ID {
 	A_IDLE = 0,
@@ -64,7 +65,7 @@ bool Golem::CollideSword(VECTOR3 top, VECTOR3 btm)
 {
 	if (CollideSegmentToSphere(top, btm,
 				transform.position + VECTOR3(0, 1, 0), 1.0f)) {
-		DestroyMe();
+		ChangeIntention(I_DAMAGED);
 		return true;
 	}
 	return false;
@@ -82,6 +83,9 @@ void Golem::UpdateIntention()
 	case I_BACK:
 		IntBack();
 		break;
+	case I_DAMAGED:
+		IntDamaged();
+		break;
 	}
 }
 
@@ -98,6 +102,9 @@ void Golem::ChangeIntention(Intent inte)
 		break;
 	case I_BACK:
 		ChangeAction(A_STAND);
+		break;
+	case I_DAMAGED:
+		ChangeAction(A_DIE);
 		break;
 	}
 	intent = inte;
@@ -135,7 +142,7 @@ void Golem::IntAttack()
 
 	// テリトリーから外れたら帰るChangeIntention(I_BACK)
 	VECTOR3 v = transform.position - teritoriCenter;
-	if (v.Length() >= 10.0) {
+	if (v.Length() >= 20.0) {
 		ChangeIntention(I_BACK);
 	}
 }
@@ -167,6 +174,10 @@ void Golem::IntBack()
 		ChangeIntention(I_WALK);
 }
 
+void Golem::IntDamaged()
+{
+}
+
 void Golem::UpdateAction()
 {
 	switch (action) {
@@ -175,6 +186,9 @@ void Golem::UpdateAction()
 		break;
 	case A_PUNCH:
 		ActPunch();
+		break;
+	case A_DIE:
+		ActDie();
 		break;
 	}
 }
@@ -190,6 +204,10 @@ void Golem::ChangeAction(Action act)
 		break;
 	case A_MOVE:
 		animator->Play(ANIM_ID::A_WALK);
+		break;
+	case A_DIE:
+		dieTime = 0.0f;
+		animator->Play(ANIM_ID::A_DIE);
 		break;
 	}
 	action = act;
@@ -218,11 +236,17 @@ void Golem::ActMove()
 			rotY -= RotSpeed;
 		}
 	}
-	transform.position += VECTOR3(0,0,0.05f)* XMMatrixRotationY(rotY);
 	// なぐるか？
-	v = plPos - transform.position;
+//	v = plPos - transform.position;
 	if (v.Length() < 2.0f) {
-		ChangeAction(A_PUNCH);
+		EnemyManager* man = 
+			ObjectManager::FindGameObject<EnemyManager>();
+		if (man->CanAttack(this)) {
+			ChangeAction(A_PUNCH);
+		}
+	} else {
+		transform.position +=
+			VECTOR3(0, 0, 0.05f) * XMMatrixRotationY(rotY);
 	}
 }
 
@@ -234,5 +258,15 @@ void Golem::ActPunch()
 {
 	if (animator->Finished()) {
 		ChangeAction(A_MOVE);
+	}
+}
+
+void Golem::ActDie()
+{
+	if (animator->Finished()) {
+		transform.position.y -= 0.01f;
+		if (transform.position.y < -1.0f) {
+			DestroyMe();
+		}
 	}
 }
