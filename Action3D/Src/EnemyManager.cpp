@@ -42,3 +42,8 @@ bool EnemyManager::CanAttack(Golem* golem)
         d = 0; // m‚Ì”z—ñ‚ð0‚É‚Å‚«‚é
     }
 }
+
+void EnemyManager::CancelAttack(Golem* golem)
+{
+    waiting.remove(golem);
+}

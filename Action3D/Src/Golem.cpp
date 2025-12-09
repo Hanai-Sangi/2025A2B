@@ -108,6 +108,10 @@ void Golem::ChangeIntention(Intent inte)
 		break;
 	}
 	intent = inte;
+
+	EnemyManager* man =
+		ObjectManager::FindGameObject<EnemyManager>();
+	man->CancelAttack(this);
 }
 
 bool InSight(const VECTOR3& pos, float len, float ang, const Transform& my)
@@ -258,6 +262,9 @@ void Golem::ActPunch()
 {
 	if (animator->Finished()) {
 		ChangeAction(A_MOVE);
+		EnemyManager* man = 
+			ObjectManager::FindGameObject<EnemyManager>();
+		man->CancelAttack(this);
 	}
 }
 
