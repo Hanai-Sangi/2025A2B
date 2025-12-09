@@ -45,8 +45,8 @@ void Player::Update()
 	}
 	animator->Update();
 
-	Golem* gom = ObjectManager::FindGameObject<Golem>();
-	if (gom != nullptr) {
+	auto golems = ObjectManager::FindGameObjects<Golem>();
+	for (Golem* gom : golems) {
 		VECTOR3 push = gom->CollideSphere(
 			transform.position + VECTOR3(0, 0.5, 0), 0.5f);
 		transform.position += push;

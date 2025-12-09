@@ -6,9 +6,11 @@
 #include "Player.h"
 #include "Camera.h"
 #include "Golem.h"
+#include "EnemyManager.h"
 
 PlayScene::PlayScene()
 {
+	new EnemyManager();
 	new Field();
 	new Player();
 	new Camera();
