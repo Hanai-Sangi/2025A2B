@@ -41,12 +41,25 @@ void Golem::Update()
 	animator->Update();
 	UpdateIntention();
 	UpdateAction();
+	// GolemÇ«Ç§ÇµèdÇ»ÇÁÇ»Ç¢ÇÊÇ§Ç…Ç∑ÇÈ
+	auto golems = ObjectManager::FindGameObjects<Golem>();
+	for (Golem* g : golems) {
+		// gÇ∆é©ï™Ç™ìñÇΩÇ¡ÇƒÇ¢ÇÍÇŒÅAé©ï™Ç™îÇØÇÈ
+		VECTOR3 v = transform.position - g->GetTransform().position;
+		v.y = 0;
+		float len = magnitude(v);
+		if (len < 2.0f) {
+			//             Å´å¸Ç´(í∑Ç≥ÇPÇÃÉxÉNÉgÉãÅj* í∑Ç≥
+			VECTOR3 push = normalize(v) * (2.0f-len);
+			transform.position += push;
+		}
+	}
 }
 
 void Golem::Draw()
 {
 	Object3D::Draw();
-	DrawSphere(transform.position+VECTOR3(0,1,0), 1.0f, RED);
+	DrawSphere(transform.position, sonicRadius, RED);
 }
 
 VECTOR3 Golem::CollideSphere(VECTOR3 center, float radius)
@@ -265,6 +278,16 @@ void Golem::ActPunch()
 		EnemyManager* man = 
 			ObjectManager::FindGameObject<EnemyManager>();
 		man->CancelAttack(this);
+	}
+	float f = animator->CurrentFrame();
+	if (f >= 80.0f && f < 110.0f) {
+		// è’åÇîgî≠ê∂
+		Player* p = ObjectManager::FindGameObject<Player>();
+		float rate = (f-80.0f) / (110-80);
+		sonicRadius = rate * 4.0; // è’åÇîgÇçLÇ∞ÇÈ
+		p->CollideCircle(transform.position, sonicRadius);
+	} else {
+		sonicRadius = 0.0f;
 	}
 }
 

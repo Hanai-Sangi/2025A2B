@@ -7,6 +7,7 @@ enum ANIM_ID {
 	A_ATTACK1 = 2,
 	A_ATTACK2,
 	A_ATTACK3,
+	A_DAMAGE,
 };
 
 Player::Player()
@@ -17,6 +18,7 @@ Player::Player()
 	mesh->LoadAnimation(A_ATTACK1, "Data/Player/attack1.anmx", false);
 	mesh->LoadAnimation(A_ATTACK2, "Data/Player/attack2.anmx", false);
 	mesh->LoadAnimation(A_ATTACK3, "Data/Player/attack3.anmx", false);
+	mesh->LoadAnimation(A_DAMAGE, "Data/Player/Damage.anmx", false);
 	animator = new Animator();
 	animator->SetModel(mesh);
 	animator->Play(A_RUN);
@@ -42,6 +44,9 @@ void Player::Update()
 	case ST_ATTACK3:
 		UpdateAttack3();
 		break;
+	case ST_DAMAGE:
+		UpdateDamage();
+		break;
 	}
 	animator->Update();
 
@@ -66,6 +71,21 @@ void Player::Draw()
 	swordTop = top;
 	swordBtm = handPos;
 
+}
+
+bool Player::CollideCircle(VECTOR3 center, float radius)
+{
+	VECTOR3 v = center - transform.position;
+	if (v.y > 0.1f || v.y < -0.1f) {
+		return false; //Y‚ª”ÍˆÍŠO
+	}
+	v.y = 0; // ‰~’Œ‚É‚·‚é
+	if (magnitude(v) < radius) {
+		animator->Play(A_DAMAGE);
+		state = ST_DAMAGE;
+		return true;
+	}
+	return false;
 }
 
 VECTOR2 Player::LStickVec()
@@ -221,6 +241,14 @@ void Player::UpdateAttack2()
 }
 
 void Player::UpdateAttack3()
+{
+	if (animator->Finished()) {
+		animator->Play(A_RUN);
+		state = ST_NORMAL;
+	}
+}
+
+void Player::UpdateDamage()
 {
 	if (animator->Finished()) {
 		animator->Play(A_RUN);

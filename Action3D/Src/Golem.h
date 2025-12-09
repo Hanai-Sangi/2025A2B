@@ -49,4 +49,6 @@ private:
 
 	VECTOR3 teritoriCenter;
 	float dieTime;
+
+	float sonicRadius;
 };
