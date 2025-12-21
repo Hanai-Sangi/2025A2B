@@ -30,6 +30,11 @@ void FallPuyo::Update()
 			x++;
 		}
 	}
+#if _DEBUG
+	if (di->CheckKey(KD_TRG, DIK_K)) {
+		color = (Puyo::Color)((color+1)%5);
+	}
+#endif
 	if (di->CheckKey(KD_DAT, DIK_S)) {
 		//timer = 0.0f;
 		// ‚à‚µ‚­‚ÍAáŠ±’x‚­‚·‚éê‡
