@@ -23,6 +23,7 @@ private:
 		Puyo::Color color;
 		bool checked; // 調べたマーク
 		float offsetY; // Yをずらす値
+		int connect; // つながりをビットごとに持つ
 		Cell() : color(Puyo::C_NONE), checked(false), offsetY(0) {}
 	};
 	float fallSpeed;

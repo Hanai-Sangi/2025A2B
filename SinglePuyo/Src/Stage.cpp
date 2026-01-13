@@ -9,6 +9,7 @@ Stage::Stage()
 	for (int x = 0; x < WIDTH; x++) {
 		for (int y = 0; y < HEIGHT; y++) {
 			Puyo::Color c = Puyo::C_NONE;
+			cells[x][y].connect = 0;
 			if (x == 0 || x == WIDTH-1 || y == HEIGHT-1) {
 				c = Puyo::C_WALL;
 			}
@@ -61,8 +62,9 @@ void Stage::Draw()
 			int col = cells[x][y].color;
 			if (col != Puyo::C_NONE) {
 				int off = static_cast<int>(cells[x][y].offsetY);
+				int iy = cells[x][y].connect * 32;
 				spr->Draw(image, x * 32 + 100, y * 32 + 200 - off,
-					col * 32, 0, 32, 32);
+					col * 32, iy, 32, 32);
 			}
 		}
 	}
@@ -78,23 +80,7 @@ bool Stage::CanMove(int x, int y)
 void Stage::Set(int x, int y, Puyo::Color c)
 {
 	cells[x][y].color = c;
-	//checked‚ğ‰Šú‰»
-	for (auto& cx : cells) {
-		for (Cell& cc : cx) {
-			cc.checked = false;
-		}
-	}
-	if (CheckConnect(x, y) >= 4) {
-		//4ŒÂÁ‚·
-		for (auto& cx : cells) {
-			for (Cell& cc : cx) {
-				if (cc.checked) {
-					cc.color = Puyo::C_NONE;
-				}
-			}
-		}
-		Drop(); // —‚Æ‚·ˆ—‚ğŠÖ”‚É‚µ‚Ä‚¨‚­
-	}
+	ChainCheck();
 }
 
 int Stage::CheckConnect(int x, int y)
@@ -145,6 +131,20 @@ void Stage::ChainCheck()
 {
 	for (int x = 1; x < WIDTH-1; x++) {
 		for (int y = 0; y < HEIGHT-1; y++) {
+			//cells[x][y]‚Ìconnect‚ğì‚é
+			cells[x][y].connect = 0;
+			if (cells[x + 1][y].color == cells[x][y].color) {
+				cells[x][y].connect += 8;
+			}
+			if (cells[x - 1][y].color == cells[x][y].color) {
+				cells[x][y].connect += 4;
+			}
+			if (cells[x][y+1].color == cells[x][y].color) {
+				cells[x][y].connect += 2;
+			}
+			if (y > 0 && cells[x][y-1].color == cells[x][y].color) {
+				cells[x][y].connect += 1;
+			}
 
 			//checked‚ğ‰Šú‰»
 			for (auto& cx : cells) {
